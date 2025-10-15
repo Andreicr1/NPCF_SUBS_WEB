@@ -1,13 +1,14 @@
-import { Investor } from '@prisma/client';
 import { CompleteKycData } from './types';
 import { generatePdfData } from './fieldMapping';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+
+type InvestorData = Record<string, any>;
 
 /**
  * Gera todos os PDFs necessários preenchidos com os dados do investidor
  */
 export const generateAllPdfs = async (
-  investor: Investor,
+  investor: InvestorData,
   kycData: CompleteKycData
 ): Promise<{
   kycPdf: Uint8Array;
@@ -34,7 +35,7 @@ export const generateAllPdfs = async (
  * Gera o PDF do KYC Questionnaire
  */
 export const generateKycPdf = async (
-  investor: Investor,
+  investor: InvestorData,
   kycData: CompleteKycData
 ): Promise<Uint8Array> => {
   // Carregar o template PDF vazio
@@ -73,7 +74,7 @@ export const generateKycPdf = async (
  * Gera o PDF do FATCA/CRS
  */
 export const generateFatcaPdf = async (
-  investor: Investor,
+  investor: InvestorData,
   kycData: CompleteKycData
 ): Promise<Uint8Array> => {
   const templatePath = '/templates/FATCA_CRS_individual_self_cert_final_Dec_15.pdf';
@@ -135,7 +136,7 @@ export const generateFatcaPdf = async (
  * Gera o PDF do Source of Wealth
  */
 export const generateSourceOfWealthPdf = async (
-  investor: Investor,
+  investor: InvestorData,
   kycData: CompleteKycData
 ): Promise<Uint8Array> => {
   const templatePath = '/templates/Source_of_Funds_and_Wealth_Form.pdf';
@@ -190,7 +191,7 @@ export const generateSourceOfWealthPdf = async (
  * Gera o PDF do Subscription Agreement
  */
 export const generateSubscriptionPdf = async (
-  investor: Investor,
+  investor: InvestorData,
   kycData: CompleteKycData
 ): Promise<Uint8Array> => {
   const templatePath = '/templates/Netz_Private_Credit_Fund_-_Main_Subscription_Documents_-_FINAL_Compacted.pdf';
@@ -279,7 +280,7 @@ export const generateSubscriptionPdf = async (
  * Salva PDFs gerados localmente (para download)
  */
 export const downloadPdf = (pdfBytes: Uint8Array, filename: string) => {
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   
   const link = document.createElement('a');
@@ -294,7 +295,7 @@ export const downloadPdf = (pdfBytes: Uint8Array, filename: string) => {
  * Gera e baixa todos os PDFs
  */
 export const downloadAllPdfs = async (
-  investor: Investor,
+  investor: InvestorData,
   kycData: CompleteKycData
 ) => {
   const pdfs = await generateAllPdfs(investor, kycData);

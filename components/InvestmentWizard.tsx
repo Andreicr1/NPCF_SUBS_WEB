@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Investor } from '@prisma/client';
 import { CompleteKycData, PepData, SourceData, FatcaCrsData, SubscriptionAgreementData } from '@/lib/types';
 import { validateRequiredFields } from '@/lib/fieldMapping';
-import useDocumentUpload from '@/hooks/useDocumentUpload';
+import useDocumentUpload from '../hooks/useDocumentUpload';
 import PepAmlForm from './PepAmlForm';
 import FatcaCrsForm from './FatcaCrsForm';
 import SubscriptionAgreementForm from './SubscriptionAgreementForm';
@@ -13,8 +12,11 @@ interface InvestmentWizardProps {
   onComplete: (data: InvestmentWizardData) => void;
 }
 
+// Type for investor data
+type InvestorData = Record<string, any>;
+
 export interface InvestmentWizardData {
-  investor: Partial<Investor>;
+  investor: Partial<InvestorData>;
   kycData: CompleteKycData;
   documents: {
     passport?: File;
@@ -98,7 +100,7 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
   const handleComplete = () => {
     // Validação final
     const validation = validateRequiredFields(
-      wizardData.investor as Investor,
+      wizardData.investor,
       wizardData.kycData
     );
 
@@ -116,8 +118,7 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
     switch (currentStep) {
       case 1: // Dados Pessoais
         if (!wizardData.investor.fullName) errors.push('Nome completo é obrigatório');
-        if (!wizardData.investor.dateOfBirth) errors.push('Data de nascimento é obrigatória');
-        if (!wizardData.investor.countryOfBirth) errors.push('País de nascimento é obrigatório');
+        if (!wizardData.investor.birthDate) errors.push('Data de nascimento é obrigatória');
         if (!wizardData.investor.nationality) errors.push('Nacionalidade é obrigatória');
         break;
 
@@ -181,7 +182,7 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
     return errors;
   };
 
-  const updateInvestor = (field: keyof Investor, value: any) => {
+  const updateInvestor = (field: string | number | symbol, value: any) => {
     setWizardData({
       ...wizardData,
       investor: {
@@ -256,7 +257,7 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
       case 7:
         return (
           <PdfPreview
-            investor={wizardData.investor as Investor}
+            investor={wizardData.investor}
             kycData={wizardData.kycData}
           />
         );
@@ -359,8 +360,8 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
 
 // Step Components (to be created separately)
 interface StepProps {
-  data: Partial<Investor>;
-  onChange: (field: keyof Investor, value: any) => void;
+  data: Partial<InvestorData>;
+  onChange: (field: string | number | symbol, value: any) => void;
 }
 
 const PersonalInfoStep: React.FC<StepProps> = ({ data, onChange }) => {
@@ -572,22 +573,21 @@ const DocumentUploadStep: React.FC<DocumentUploadProps> = ({
   onChange 
 }) => {
   const {
-    uploads,
     documents: uploadedDocs,
-    addFile,
-    uploadFile,
-    removeUpload,
-  } = useDocumentUpload(investorId);
+    uploadDocument,
+    deleteDocument,
+    uploading,
+    error
+  } = useDocumentUpload();
 
   const handleFileChange = async (
     field: keyof InvestmentWizardData['documents'], 
     file: File | null
   ) => {
-    if (file) {
-      // Adicionar à fila e fazer upload
-      const upload = addFile(file, field);
+    if (file && investorId) {
+      // Fazer upload do arquivo
       try {
-        await uploadFile(upload);
+        await uploadDocument(file, field, investorId);
         onChange({
           ...documents,
           [field]: file,

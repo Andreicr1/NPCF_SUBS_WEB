@@ -1,0 +1,5 @@
+{
+  "/api/documents/upload/route": "app/api/documents/upload/route.js",
+  "/api/investors/route": "app/api/investors/route.js",
+  "/api/kyc/submit/route": "app/api/kyc/submit/route.js"
+}
