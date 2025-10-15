@@ -1,5 +1,5 @@
 import React from 'react';
-import { PepData, SourceData, WealthCategory } from '@/lib/types';
+import { PepData, SourceData, WealthCategory } from '../lib/types';
 
 interface PepAmlFormProps {
   pepData: PepData;

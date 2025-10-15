@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CompleteKycData } from '@/lib/types';
-import { downloadAllPdfs, downloadPdf, generateAllPdfs } from '@/lib/pdfGenerator';
+import { CompleteKycData } from '../lib/types';
+import { downloadAllPdfs, downloadPdf, generateAllPdfs } from '../lib/pdfGenerator';
 
 type InvestorData = Record<string, any>;
 

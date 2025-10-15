@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CompleteKycData, PepData, SourceData, FatcaCrsData, SubscriptionAgreementData } from '@/lib/types';
-import { validateRequiredFields } from '@/lib/fieldMapping';
+import { CompleteKycData, PepData, SourceData, FatcaCrsData, SubscriptionAgreementData } from '../lib/types';
+import { validateRequiredFields } from '../lib/fieldMapping';
 import useDocumentUpload from '../hooks/useDocumentUpload';
 import PepAmlForm from './PepAmlForm';
 import FatcaCrsForm from './FatcaCrsForm';

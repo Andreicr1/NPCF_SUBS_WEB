@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { SubscriptionAgreementData, ShareClass, shareClassLabels } from '@/lib/types';
-import { Investor } from '@prisma/client';
+import { SubscriptionAgreementData, ShareClass, shareClassLabels } from '../lib/types';
+
+type InvestorData = Record<string, any>;
 
 interface SubscriptionAgreementFormProps {
   data: SubscriptionAgreementData;
-  investorData: Partial<Investor>;
+  investorData: Partial<InvestorData>;
   onChange: (data: SubscriptionAgreementData) => void;
 }
 
