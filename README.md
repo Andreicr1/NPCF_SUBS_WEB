@@ -248,6 +248,9 @@ npm test
    - O deploy acontecerá automaticamente a cada push na branch main
    - O banco SQLite será criado automaticamente no ambiente de produção
 
+   **Nota:** As dependências TypeScript estão em `dependencies` ao invés de `devDependencies`
+   porque o Cloudflare Pages não instala devDependencies por padrão durante o build.
+
 ### Outras Plataformas
 
 #### Vercel
