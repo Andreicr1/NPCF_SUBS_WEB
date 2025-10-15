@@ -271,34 +271,26 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          {STEPS.map((step, index) => (
-            <div key={step.id} className="flex items-center flex-1">
-              <div className="flex flex-col items-center flex-1">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                    currentStep >= step.id
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}
-                >
-                  {currentStep > step.id ? '✓' : step.id}
+      <div className="mb-10">
+        <div className="relative mx-auto max-w-3xl">
+          <div className="h-1.5 w-full rounded-full bg-neutral-300" />
+          <div
+            className="absolute left-0 top-0 h-1.5 rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+            style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
+          />
+          <div className="absolute inset-0 -mt-2 flex justify-between">
+            {STEPS.map((s) => {
+              const state = currentStep === s.id ? 'active' : currentStep > s.id ? 'done' : 'todo';
+              const size = state === 'active' ? 'w-5 h-5' : state === 'done' ? 'w-4 h-4' : 'w-3 h-3';
+              const color = state === 'active' ? 'bg-accent animate-pulseSoft' : state === 'done' ? 'bg-primary' : 'bg-neutral-300';
+              return (
+                <div key={s.id} className="flex -translate-y-1/2 flex-col items-center">
+                  <div className={`rounded-full ${size} ${color} shadow`} />
+                  <div className={`mt-3 text-[11px] ${state !== 'todo' ? 'text-primary' : 'text-neutral-600'}`}>{s.name}</div>
                 </div>
-                <div className="text-xs mt-2 text-center">
-                  <div className="font-medium">{step.name}</div>
-                  <div className="text-gray-500">{step.description}</div>
-                </div>
-              </div>
-              {index < STEPS.length - 1 && (
-                <div
-                  className={`h-1 flex-1 mx-2 ${
-                    currentStep > step.id ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -326,16 +318,16 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
       )}
 
       {/* Step Content */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="card mb-8 p-8">
         {renderStep()}
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between">
+      <div className="mt-12 flex justify-between">
         <button
           onClick={handleBack}
           disabled={currentStep === 1}
-          className="px-6 py-3 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+          className="btn-secondary disabled:opacity-60"
         >
           Voltar
         </button>
@@ -343,14 +335,14 @@ export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({
         {currentStep < STEPS.length ? (
           <button
             onClick={handleNext}
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="btn-primary"
           >
             Próximo
           </button>
         ) : (
           <button
             onClick={handleComplete}
-            className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            className="btn-primary"
           >
             Finalizar e Enviar
           </button>
@@ -381,7 +373,7 @@ const PersonalInfoStep: React.FC<StepProps> = ({ data, onChange }) => {
           value={data.fullName || ''}
           onChange={(e) => onChange('fullName', e.target.value)}
           placeholder="Como aparece no passaporte"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input-field w-full"
           required
         />
       </div>
@@ -396,7 +388,7 @@ const PersonalInfoStep: React.FC<StepProps> = ({ data, onChange }) => {
             id="dateOfBirth"
             value={data.dateOfBirth?.toString().split('T')[0] || ''}
             onChange={(e) => onChange('dateOfBirth', new Date(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
             required
           />
         </div>
@@ -411,7 +403,7 @@ const PersonalInfoStep: React.FC<StepProps> = ({ data, onChange }) => {
             value={data.countryOfBirth || ''}
             onChange={(e) => onChange('countryOfBirth', e.target.value)}
             placeholder="Brasil"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
             required
           />
         </div>
@@ -428,7 +420,7 @@ const PersonalInfoStep: React.FC<StepProps> = ({ data, onChange }) => {
             value={data.nationality || ''}
             onChange={(e) => onChange('nationality', e.target.value)}
             placeholder="Brasileira"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
             required
           />
         </div>
@@ -443,7 +435,7 @@ const PersonalInfoStep: React.FC<StepProps> = ({ data, onChange }) => {
             value={data.occupation || ''}
             onChange={(e) => onChange('occupation', e.target.value)}
             placeholder="Engenheiro, Médico, etc."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
           />
         </div>
       </div>
@@ -466,7 +458,7 @@ const AddressContactStep: React.FC<StepProps> = ({ data, onChange }) => {
           value={data.address || ''}
           onChange={(e) => onChange('address', e.target.value)}
           placeholder="Rua, número, complemento"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input-field w-full"
           required
         />
       </div>
@@ -481,7 +473,7 @@ const AddressContactStep: React.FC<StepProps> = ({ data, onChange }) => {
             id="city"
             value={data.city || ''}
             onChange={(e) => onChange('city', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
             required
           />
         </div>
@@ -495,7 +487,7 @@ const AddressContactStep: React.FC<StepProps> = ({ data, onChange }) => {
             id="state"
             value={data.state || ''}
             onChange={(e) => onChange('state', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
           />
         </div>
 
@@ -508,7 +500,7 @@ const AddressContactStep: React.FC<StepProps> = ({ data, onChange }) => {
             id="postalCode"
             value={data.postalCode || ''}
             onChange={(e) => onChange('postalCode', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
           />
         </div>
       </div>
@@ -523,7 +515,7 @@ const AddressContactStep: React.FC<StepProps> = ({ data, onChange }) => {
           value={data.country || ''}
           onChange={(e) => onChange('country', e.target.value)}
           placeholder="Brasil"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input-field w-full"
           required
         />
       </div>
@@ -539,7 +531,7 @@ const AddressContactStep: React.FC<StepProps> = ({ data, onChange }) => {
             value={data.email || ''}
             onChange={(e) => onChange('email', e.target.value)}
             placeholder="seu@email.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
             required
           />
         </div>
@@ -554,7 +546,7 @@ const AddressContactStep: React.FC<StepProps> = ({ data, onChange }) => {
             value={data.phone || ''}
             onChange={(e) => onChange('phone', e.target.value)}
             placeholder="+55 11 99999-9999"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field w-full"
             required
           />
         </div>

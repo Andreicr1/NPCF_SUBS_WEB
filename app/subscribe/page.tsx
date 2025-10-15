@@ -27,8 +27,16 @@ export default function SubscribePage() {
   }, []);
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-8">
-      <h1 className="text-2xl font-semibold mb-6">Subscrição</h1>
+    <main className="min-h-screen bg-neutral-200">
+      <header className="mx-auto max-w-6xl px-6 py-6">
+        <div className="opacity-80">
+          <span className="font-display text-3xl text-primary">Netz</span>
+          <span className="font-display text-3xl text-secondary"> asset</span>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-5xl px-6 pb-12">
+        <h1 className="mb-6 font-display text-2xl font-semibold">Subscrição</h1>
       {submittedId ? (
         <div className="rounded-md border border-green-200 bg-green-50 p-4">
           <p className="text-green-800">Dados enviados com sucesso. Protocolo: {submittedId}</p>
@@ -37,9 +45,9 @@ export default function SubscribePage() {
         <InvestmentWizard fundId="npcf" onComplete={handleComplete} />
       )}
       {submitting && (
-        <p className="mt-4 text-sm text-gray-500">Enviando dados, aguarde…</p>
+        <p className="mt-4 text-sm text-neutral-600">Enviando dados, aguarde…</p>
       )}
+      </div>
     </main>
   );
 }
-
