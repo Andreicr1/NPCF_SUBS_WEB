@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Investor - Dados do investidor
+model Investor {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Dados Pessoais
+  investorType    String // "individual" | "entity"
+  fullName        String
+  legalName       String?
+  cpfCnpj         String  @unique
+  rg              String?
+  birthDate       DateTime?
+  nationality     String?
+  maritalStatus   String?
+  profession      String?
+  
+  // Endereço
+  address         String
+  addressNumber   String
+  complement      String?
+  neighborhood    String
+  city            String
+  state           String
+  zipCode         String
+  country         String  @default("Brasil")
+  
+  // Contato
+  email           String  @unique
+  phone           String
+  cellphone       String?
+  
+  // Qualificação
+  isQualified     Boolean @default(false)
+  qualificationType String? // "professional" | "assets" | "income"
+  
+  // Dados Bancários
+  bankName        String?
+  bankBranch      String?
+  bankAccount     String?
+  bankAccountType String? // "checking" | "savings"
+  
+  // Subscrição
+  subscriptionAmount Decimal?
+  numberOfQuotas     Int?
+  quotaValue         Decimal?
+  
+  // AML/KYC
+  isPep           Boolean @default(false)
+  pepDetails      String?
+  pepPosition     String? // Current/former political position
+  pepCountry      String? // Country of political exposure
+  isRca           Boolean @default(false) // Related Close Associate
+  rcaRelationship String? // Relationship to PEP
+  
+  // Source of Funds/Wealth
+  sourceOfFunds   String? // Activity that generated the funds
+  sourceOfWealth  String? // Activity that generated total net worth
+  wealthCategories String? // JSON array of selected categories
+  wealthDetails   String? // Full details about source of wealth
+  transferringBank String? // Name of transferring bank
+  transferringBankCountry String? // Country of bank
+  employerName    String?
+  employerAddress String?
+  assetsArePersonalProperty Boolean @default(true)
+  noAssetsFromCriminalActivity Boolean @default(true)
+  
+  // FATCA/CRS
+  isUsCitizen     Boolean @default(false)
+  ustin           String? // U.S. Taxpayer Identification Number
+  usBirthplace    String? // If born in US
+  hasSurrenderedUsCitizenship Boolean @default(false)
+  taxResidencies  String? // JSON array of tax residencies
+  
+  // Additional KYC
+  purposeOfAccount String? // Purpose of the investment
+  expectedActivity String? // Expected transaction activity
+  fundingSource    String? // Where funds are coming from
+  
+  // Subscription Agreement
+  eligibleInvestorConfirmation Boolean @default(false)
+  nonUsPersonConfirmation Boolean @default(false)
+  shareClassSelection String? // A1, A2, B1, B2, C, N
+  subscriptionAmountWords String?
+  incorporationDate DateTime?
+  incorporationPlace String?
+  countryOfFormation String?
+  mailingAddress String?
+  incomingBankLocation String?
+  signatoryCapacity String?
+  
+  // Status
+  status          String  @default("draft") // "draft" | "submitted" | "under_review" | "approved" | "rejected"
+  submittedAt     DateTime?
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  
+  // Relacionamentos
+  documents       Document[]
+  signatures      Signature[]
+  
+  @@map("investors")
+}
+
+// Document - Documentos enviados
+model Document {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  investorId  String
+  investor    Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
+  
+  documentType String // "cpf" | "rg" | "proof_of_address" | "proof_of_income" | etc
+  fileName     String
+  filePath     String
+  fileSize     Int
+  mimeType     String
+  
+  status       String  @default("pending") // "pending" | "approved" | "rejected"
+  reviewNotes  String?
+  
+  @@map("documents")
+}
+
+// Signature - Assinaturas eletrônicas
+model Signature {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  investorId  String
+  investor    Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
+  
+  // Dropbox Sign
+  signatureRequestId String  @unique
+  signatureId        String?
+  
+  // PDF
+  pdfFilePath        String?
+  signedPdfPath      String?
+  
+  // Status
+  status             String  @default("pending") // "pending" | "signed" | "declined" | "expired"
+  signedAt           DateTime?
+  declinedAt         DateTime?
+  declineReason      String?
+  
+  // Metadata
+  ipAddress          String?
+  userAgent          String?
+  
+  @@map("signatures")
+}
+
+// AuditLog - Log de auditoria
+model AuditLog {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  
+  userId      String?  // ID do investidor ou admin
+  action      String   // "create" | "update" | "delete" | "sign" | etc
+  entity      String   // "investor" | "document" | "signature"
+  entityId    String
+  
+  changes     String?  // JSON com as mudanças
+  ipAddress   String?
+  userAgent   String?
+  
+  @@map("audit_logs")
+}
