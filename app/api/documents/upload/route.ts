@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import prisma from '@/lib/db';
+import prisma from '../../../../lib/db';
 
 // POST /api/documents/upload - Fazer upload de documento
 export async function POST(request: NextRequest) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db';
-import { validateCPF, validateCNPJ } from '@/lib/validation';
+import prisma from '../../../lib/db';
+import { validateCPF, validateCNPJ } from '../../../lib/validation';
 
 // GET /api/investors - Listar todos os investidores (com filtros)
 // GET /api/investors?email=xxx - Buscar por email

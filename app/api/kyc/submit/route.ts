@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db';
-import { CompleteKycData } from '@/lib/types';
+import prisma from '../../../../lib/db';
+import { CompleteKycData } from '../../../../lib/types';
 
 // POST /api/kyc/submit - Submeter dados KYC completos
 export async function POST(request: NextRequest) {
