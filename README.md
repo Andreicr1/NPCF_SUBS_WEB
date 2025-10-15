@@ -230,6 +230,7 @@ npm test
    Build command: npm run build
    Build output directory: .next
    Root directory: (leave empty)
+   Framework preset: Next.js
    ```
 
 3. **Variáveis de Ambiente:**
@@ -247,6 +248,9 @@ npm test
 4. **Deploy Automático:**
    - O deploy acontecerá automaticamente a cada push na branch main
    - O banco SQLite será criado automaticamente no ambiente de produção
+
+   **Importante:** Certifique-se de selecionar "Next.js" como Framework preset no painel do Cloudflare Pages
+   para evitar erros de detecção de output directory.
 
    **Nota:** As dependências TypeScript estão em `dependencies` ao invés de `devDependencies`
    porque o Cloudflare Pages não instala devDependencies por padrão durante o build.
