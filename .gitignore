@@ -43,7 +43,6 @@ dev.db
 dev.db-journal
 *.db
 *.db-journal
-/prisma/migrations
 
 # Uploads
 /uploads/*
