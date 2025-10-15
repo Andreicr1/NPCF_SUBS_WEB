@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import { join } from 'path';
 import prisma from '../../../../lib/db';
+import { put, del } from '@vercel/blob';
 
-// POST /api/documents/upload - Fazer upload de documento
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
+// POST /api/documents/upload - Fazer upload de documento para Vercel Blob
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const documentType = formData.get('documentType') as string;
-    const investorId = formData.get('investorId') as string;
+    const file = formData.get('file') as File | null;
+    const documentType = (formData.get('documentType') as string | null) ?? undefined;
+    const investorId = (formData.get('investorId') as string | null) ?? undefined;
 
     if (!file || !documentType || !investorId) {
       return NextResponse.json(
@@ -20,10 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar se investidor existe
-    const investor = await prisma.investor.findUnique({
-      where: { id: investorId },
-    });
-
+    const investor = await prisma.investor.findUnique({ where: { id: investorId } });
     if (!investor) {
       return NextResponse.json(
         { error: 'Investidor não encontrado' },
@@ -31,22 +30,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Criar diretório de uploads se não existir
-    const uploadsDir = join(process.cwd(), 'uploads', investorId);
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
-    // Gerar nome de arquivo único
+    // Enviar para Vercel Blob (sem usar filesystem efêmero)
     const timestamp = Date.now();
-    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const originalName = (file.name || 'document').replace(/[^a-zA-Z0-9.-]/g, '_');
     const fileName = `${documentType}_${timestamp}_${originalName}`;
-    const filePath = join(uploadsDir, fileName);
 
-    // Salvar arquivo
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
+    const { url } = await put(`investors/${investorId}/${fileName}` as `${string}`, file, {
+      access: 'public',
+      contentType: file.type,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
 
     // Salvar no banco
     const document = await prisma.document.create({
@@ -54,14 +47,13 @@ export async function POST(request: NextRequest) {
         investorId,
         documentType,
         fileName,
-        filePath: `/uploads/${investorId}/${fileName}`,
+        filePath: url, // URL do Blob
         fileSize: file.size,
         mimeType: file.type,
         status: 'pending',
       },
     });
 
-    // Criar log de auditoria
     await prisma.auditLog.create({
       data: {
         userId: investorId,
@@ -75,7 +67,6 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(document);
-
   } catch (error: any) {
     console.error('Error uploading document:', error);
     return NextResponse.json(
@@ -104,7 +95,6 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(documents);
-
   } catch (error: any) {
     console.error('Error fetching documents:', error);
     return NextResponse.json(
@@ -127,10 +117,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const document = await prisma.document.findUnique({
-      where: { id: documentId },
-    });
-
+    const document = await prisma.document.findUnique({ where: { id: documentId } });
     if (!document) {
       return NextResponse.json(
         { error: 'Documento não encontrado' },
@@ -138,20 +125,15 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Deletar arquivo físico (opcional - pode querer manter para auditoria)
-    // const fs = require('fs/promises');
-    // try {
-    //   await fs.unlink(join(process.cwd(), document.filePath));
-    // } catch (err) {
-    //   console.error('Error deleting file:', err);
-    // }
+    // Remove do Blob (ignora erro se já não existir)
+    try {
+      await del(document.filePath as `${string}`, { token: process.env.BLOB_READ_WRITE_TOKEN });
+    } catch (err) {
+      console.error('Error deleting blob:', err);
+    }
 
-    // Deletar do banco
-    await prisma.document.delete({
-      where: { id: documentId },
-    });
+    await prisma.document.delete({ where: { id: documentId } });
 
-    // Criar log de auditoria
     await prisma.auditLog.create({
       data: {
         userId: document.investorId,
@@ -165,7 +147,6 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-
   } catch (error: any) {
     console.error('Error deleting document:', error);
     return NextResponse.json(
@@ -174,3 +155,4 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+

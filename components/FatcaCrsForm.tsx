@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { FatcaCrsData, TaxResidency } from '../lib/types';
 import { commonCountries, reasonsForNoTin } from '../lib/fatcaCrsValidation';

@@ -1,0 +1,46 @@
+stages:
+  - deploy
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .vercel/cache
+
+.vercel_deploy_template: &vercel_deploy_template
+  image: node:20-alpine
+  stage: deploy
+  before_script:
+    - corepack enable || true
+    - npm i -g vercel@latest
+    - node -v && npm -v && vercel --version
+    - npm ci --no-audit --no-fund
+    - vercel pull --yes --environment=$VERCEL_ENV --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID
+  script:
+    - vercel build --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID
+    - |
+      if [ "$VERCEL_ENV" = "production" ]; then FLAGS="--prod"; else FLAGS=""; fi
+      vercel deploy --prebuilt $FLAGS --yes --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID
+  only:
+    - branches
+
+deploy:preview:
+  <<: *vercel_deploy_template
+  variables:
+    VERCEL_ENV: "preview"
+  rules:
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "main"'
+
+deploy:production:
+  <<: *vercel_deploy_template
+  variables:
+    VERCEL_ENV: "production"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# CI/CD variables to set in GitLab:
+# - VERCEL_TOKEN (Account > Tokens)
+# - VERCEL_ORG_ID (Project Settings > General > Team ID)
+# - VERCEL_PROJECT_ID (Project Settings > General > Project ID)
+# Runtime envs should be configured in Vercel Project settings (DATABASE_URL, NEXT_PUBLIC_APP_URL, APP_SECRET, DROPBOX_SIGN_*)
+

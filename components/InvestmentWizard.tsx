@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { CompleteKycData, PepData, SourceData, FatcaCrsData, SubscriptionAgreementData } from '../lib/types';
 import { validateRequiredFields } from '../lib/fieldMapping';
