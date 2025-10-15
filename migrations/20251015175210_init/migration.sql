@@ -1,14 +1,14 @@
 -- CreateTable
 CREATE TABLE "investors" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "investorType" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
     "legalName" TEXT,
     "cpfCnpj" TEXT NOT NULL,
     "rg" TEXT,
-    "birthDate" DATETIME,
+    "birthDate" TIMESTAMP(3),
     "nationality" TEXT,
     "maritalStatus" TEXT,
     "profession" TEXT,
@@ -29,9 +29,9 @@ CREATE TABLE "investors" (
     "bankBranch" TEXT,
     "bankAccount" TEXT,
     "bankAccountType" TEXT,
-    "subscriptionAmount" DECIMAL,
+    "subscriptionAmount" DECIMAL(65,30),
     "numberOfQuotas" INTEGER,
-    "quotaValue" DECIMAL,
+    "quotaValue" DECIMAL(65,30),
     "isPep" BOOLEAN NOT NULL DEFAULT false,
     "pepDetails" TEXT,
     "pepPosition" TEXT,
@@ -60,23 +60,25 @@ CREATE TABLE "investors" (
     "nonUsPersonConfirmation" BOOLEAN NOT NULL DEFAULT false,
     "shareClassSelection" TEXT,
     "subscriptionAmountWords" TEXT,
-    "incorporationDate" DATETIME,
+    "incorporationDate" TIMESTAMP(3),
     "incorporationPlace" TEXT,
     "countryOfFormation" TEXT,
     "mailingAddress" TEXT,
     "incomingBankLocation" TEXT,
     "signatoryCapacity" TEXT,
     "status" TEXT NOT NULL DEFAULT 'draft',
-    "submittedAt" DATETIME,
-    "reviewedAt" DATETIME,
-    "reviewedBy" TEXT
+    "submittedAt" TIMESTAMP(3),
+    "reviewedAt" TIMESTAMP(3),
+    "reviewedBy" TEXT,
+
+    CONSTRAINT "investors_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "documents" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "investorId" TEXT NOT NULL,
     "documentType" TEXT NOT NULL,
     "fileName" TEXT NOT NULL,
@@ -85,39 +87,43 @@ CREATE TABLE "documents" (
     "mimeType" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
     "reviewNotes" TEXT,
-    CONSTRAINT "documents_investorId_fkey" FOREIGN KEY ("investorId") REFERENCES "investors" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+
+    CONSTRAINT "documents_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "signatures" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "investorId" TEXT NOT NULL,
     "signatureRequestId" TEXT NOT NULL,
     "signatureId" TEXT,
     "pdfFilePath" TEXT,
     "signedPdfPath" TEXT,
     "status" TEXT NOT NULL DEFAULT 'pending',
-    "signedAt" DATETIME,
-    "declinedAt" DATETIME,
+    "signedAt" TIMESTAMP(3),
+    "declinedAt" TIMESTAMP(3),
     "declineReason" TEXT,
     "ipAddress" TEXT,
     "userAgent" TEXT,
-    CONSTRAINT "signatures_investorId_fkey" FOREIGN KEY ("investorId") REFERENCES "investors" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+
+    CONSTRAINT "signatures_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "audit_logs" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" TEXT,
     "action" TEXT NOT NULL,
     "entity" TEXT NOT NULL,
     "entityId" TEXT NOT NULL,
     "changes" TEXT,
     "ipAddress" TEXT,
-    "userAgent" TEXT
+    "userAgent" TEXT,
+
+    CONSTRAINT "audit_logs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -128,3 +134,9 @@ CREATE UNIQUE INDEX "investors_email_key" ON "investors"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "signatures_signatureRequestId_key" ON "signatures"("signatureRequestId");
+
+-- AddForeignKey
+ALTER TABLE "documents" ADD CONSTRAINT "documents_investorId_fkey" FOREIGN KEY ("investorId") REFERENCES "investors"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "signatures" ADD CONSTRAINT "signatures_investorId_fkey" FOREIGN KEY ("investorId") REFERENCES "investors"("id") ON DELETE CASCADE ON UPDATE CASCADE;
