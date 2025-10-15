@@ -1,0 +1,14 @@
+# Uploads Directory
+
+Arquivos de documentos enviados pelos investidores são armazenados aqui.
+
+Estrutura:
+```
+/uploads
+  /{investorId}
+    /passport_1234567890.pdf
+    /proofOfAddress_1234567891.jpg
+    /bankStatement_1234567892.pdf
+```
+
+**Nota**: Esta pasta não deve ser commitada no git. Apenas o .gitkeep é versionado.
