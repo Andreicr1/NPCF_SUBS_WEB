@@ -1,33 +1,30 @@
+import { Investor } from '@prisma/client';
 import { CompleteKycData } from './types';
-import { generatePdfData } from './fieldMapping';
+import { generatePdfData } from './Fieldmapping';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-
-type InvestorData = Record<string, any>;
 
 /**
  * Gera todos os PDFs necessários preenchidos com os dados do investidor
  */
 export const generateAllPdfs = async (
-  investor: InvestorData,
+  investor: Investor,
   kycData: CompleteKycData
 ): Promise<{
   kycPdf: Uint8Array;
   fatcaPdf: Uint8Array;
   sourceOfWealthPdf: Uint8Array;
-  subscriptionPdf: Uint8Array;
+  subscriptionPdf?: Uint8Array;
 }> => {
-  const [kycPdf, fatcaPdf, sourceOfWealthPdf, subscriptionPdf] = await Promise.all([
+  const [kycPdf, fatcaPdf, sourceOfWealthPdf] = await Promise.all([
     generateKycPdf(investor, kycData),
     generateFatcaPdf(investor, kycData),
     generateSourceOfWealthPdf(investor, kycData),
-    generateSubscriptionPdf(investor, kycData),
   ]);
 
   return {
     kycPdf,
     fatcaPdf,
     sourceOfWealthPdf,
-    subscriptionPdf,
   };
 };
 
@@ -35,7 +32,7 @@ export const generateAllPdfs = async (
  * Gera o PDF do KYC Questionnaire
  */
 export const generateKycPdf = async (
-  investor: InvestorData,
+  investor: Investor,
   kycData: CompleteKycData
 ): Promise<Uint8Array> => {
   // Carregar o template PDF vazio
@@ -74,7 +71,7 @@ export const generateKycPdf = async (
  * Gera o PDF do FATCA/CRS
  */
 export const generateFatcaPdf = async (
-  investor: InvestorData,
+  investor: Investor,
   kycData: CompleteKycData
 ): Promise<Uint8Array> => {
   const templatePath = '/templates/FATCA_CRS_individual_self_cert_final_Dec_15.pdf';
@@ -136,7 +133,7 @@ export const generateFatcaPdf = async (
  * Gera o PDF do Source of Wealth
  */
 export const generateSourceOfWealthPdf = async (
-  investor: InvestorData,
+  investor: Investor,
   kycData: CompleteKycData
 ): Promise<Uint8Array> => {
   const templatePath = '/templates/Source_of_Funds_and_Wealth_Form.pdf';
@@ -188,119 +185,39 @@ export const generateSourceOfWealthPdf = async (
 };
 
 /**
- * Gera o PDF do Subscription Agreement
- */
-export const generateSubscriptionPdf = async (
-  investor: InvestorData,
-  kycData: CompleteKycData
-): Promise<Uint8Array> => {
-  const templatePath = '/templates/Netz_Private_Credit_Fund_-_Main_Subscription_Documents_-_FINAL_Compacted.pdf';
-  const templateBytes = await fetch(templatePath).then((res) => res.arrayBuffer());
-
-  const pdfDoc = await PDFDocument.load(templateBytes);
-  const form = pdfDoc.getForm();
-
-  // Dados básicos do investidor
-  try {
-    form.getTextField('Investor_Name').setText(investor.fullName);
-    form.getTextField('Investor_Address').setText(investor.address || '');
-    form.getTextField('Investor_Email').setText(investor.email);
-    form.getTextField('Investor_Phone').setText(investor.phone || '');
-  } catch (error) {
-    console.warn('Basic investor fields not found');
-  }
-
-  // Subscription Details
-  try {
-    form.getTextField('Share_Class').setText(kycData.subscription.shareClassSelection);
-    form.getTextField('Subscription_Amount').setText(
-      kycData.subscription.subscriptionAmount?.toString() || ''
-    );
-    form.getTextField('Subscription_Amount_Words').setText(
-      kycData.subscription.subscriptionAmountWords || ''
-    );
-  } catch (error) {
-    console.warn('Subscription detail fields not found');
-  }
-
-  // Entity Information (if applicable)
-  if (kycData.subscription.incorporationDate) {
-    try {
-      form.getTextField('Incorporation_Date').setText(
-        kycData.subscription.incorporationDate.toLocaleDateString()
-      );
-      form.getTextField('Incorporation_Place').setText(kycData.subscription.incorporationPlace || '');
-      form.getTextField('Country_Of_Formation').setText(kycData.subscription.countryOfFormation || '');
-    } catch (error) {
-      console.warn('Entity information fields not found');
-    }
-  }
-
-  // Banking
-  try {
-    form.getTextField('Incoming_Bank_Location').setText(kycData.subscription.incomingBankLocation);
-  } catch (error) {
-    console.warn('Bank location field not found');
-  }
-
-  // Confirmations
-  try {
-    if (kycData.subscription.eligibleInvestorConfirmation) {
-      form.getCheckBox('Eligible_Investor_Confirmation').check();
-    }
-    if (kycData.subscription.nonUsPersonConfirmation) {
-      form.getCheckBox('Non_US_Person_Confirmation').check();
-    }
-  } catch (error) {
-    console.warn('Confirmation checkboxes not found');
-  }
-
-  // Mailing Address
-  if (kycData.subscription.mailingAddress) {
-    try {
-      form.getTextField('Mailing_Address').setText(kycData.subscription.mailingAddress);
-    } catch (error) {
-      console.warn('Mailing address field not found');
-    }
-  }
-
-  // Signatory Capacity
-  if (kycData.subscription.signatoryCapacity) {
-    try {
-      form.getTextField('Signatory_Capacity').setText(kycData.subscription.signatoryCapacity);
-    } catch (error) {
-      console.warn('Signatory capacity field not found');
-    }
-  }
-
-  return await pdfDoc.save();
-};
-
-/**
  * Salva PDFs gerados localmente (para download)
  */
-export function downloadPdf(bytes: Uint8Array, filename: string) {
-  // Normalize to an ArrayBuffer slice and wrap in DataView to satisfy BlobPart typing
-  const ab = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-  const view = new DataView(ab as ArrayBuffer);
-  const blob = new Blob([view], { type: 'application/pdf' });
+export const downloadPdf = (pdfBytes: Uint8Array, filename: string) => {
+  const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 60_000);
-}
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  
+  URL.revokeObjectURL(url);
+};
 
 /**
  * Gera e baixa todos os PDFs
  */
-export async function downloadAllPdfs(investor: Record<string, any>, kycData: any) {
+export const downloadAllPdfs = async (
+  investor: Investor,
+  kycData: CompleteKycData
+) => {
   const pdfs = await generateAllPdfs(investor, kycData);
-  if (pdfs.kycPdf) downloadPdf(pdfs.kycPdf, `${(investor.fullName ?? 'investor')}_KYC_Questionnaire.pdf`);
-  if (pdfs.fatcaPdf) downloadPdf(pdfs.fatcaPdf, `${(investor.fullName ?? 'investor')}_FATCA_CRS.pdf`);
-  if (pdfs.sourceOfWealthPdf) downloadPdf(pdfs.sourceOfWealthPdf, `${(investor.fullName ?? 'investor')}_Source_of_Wealth.pdf`);
-}
+
+  const investorName = investor.fullName.replace(/\s+/g, '_');
+  
+  downloadPdf(pdfs.kycPdf, `${investorName}_KYC_Questionnaire.pdf`);
+  downloadPdf(pdfs.fatcaPdf, `${investorName}_FATCA_CRS.pdf`);
+  downloadPdf(pdfs.sourceOfWealthPdf, `${investorName}_Source_of_Wealth.pdf`);
+  
+  if (pdfs.subscriptionPdf) {
+    downloadPdf(pdfs.subscriptionPdf, `${investorName}_Subscription_Agreement.pdf`);
+  }
+};
 
 export default {
   generateAllPdfs,

@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { CompleteKycData, PepData, SourceData, FatcaCrsData, SubscriptionAgreementData } from '../lib/types';
 import { validateRequiredFields } from '../lib/fieldMapping';
 import useDocumentUpload from '../hooks/useDocumentUpload';
-import PepAmlForm from './PepAmlForm';
-import FatcaCrsForm from './FatcaCrsForm';
+import PepAmlForm from './Pepamlform';
+import FatcaCrsForm from './Fatcacrsform';
 import SubscriptionAgreementForm from './SubscriptionAgreementForm';
-import PdfPreview from './PdfPreview';
+import PdfPreview from './pdfPreview';
 
 interface InvestmentWizardProps {
   fundId: string;

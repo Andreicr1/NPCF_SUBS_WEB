@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { FatcaCrsData, TaxResidency } from '../lib/types';
-import { commonCountries, reasonsForNoTin } from '../lib/fatcaCrsValidation';
+import { FatcaCrsData, TaxResidency } from '@/lib/types';
+import { commonCountries, reasonsForNoTin } from '@/lib/fatcaCrsValidation';
 
 interface FatcaCrsFormProps {
   data: FatcaCrsData;
@@ -33,7 +33,7 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
   };
 
   const removeTaxResidency = (index: number) => {
-    const newResidencies = data.taxResidencies.filter((_: TaxResidency, i: number) => i !== index);
+    const newResidencies = data.taxResidencies.filter((_, i) => i !== index);
     onChange({
       ...data,
       taxResidencies: newResidencies,
@@ -41,7 +41,7 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
   };
 
   const updateTaxResidency = (index: number, field: keyof TaxResidency, value: string) => {
-    const newResidencies = data.taxResidencies.map((residency: TaxResidency, i: number) => {
+    const newResidencies = data.taxResidencies.map((residency, i) => {
       if (i === index) {
         return { ...residency, [field]: value };
       }
@@ -149,7 +149,7 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
           </button>
         </div>
 
-        {data.taxResidencies.map((residency: TaxResidency, index: number) => (
+        {data.taxResidencies.map((residency, index) => (
           <div key={index} className="border border-gray-300 rounded-lg p-4 space-y-4">
             <div className="flex justify-between items-center mb-2">
               <h4 className="font-medium">Residência Fiscal {index + 1}</h4>
@@ -165,18 +165,17 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
             </div>
 
             <div>
-              <label htmlFor={`country-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 País de Residência Fiscal *
               </label>
               <select
-                id={`country-${index}`}
                 value={residency.country}
                 onChange={(e) => updateTaxResidency(index, 'country', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Selecione um país</option>
-                {commonCountries.map((country: { code: string; name: string }) => (
+                {commonCountries.map((country) => (
                   <option key={country.code} value={country.code}>
                     {country.name}
                   </option>
@@ -185,11 +184,10 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
             </div>
 
             <div>
-              <label htmlFor={`taxType-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tipo de Identificação Fiscal
               </label>
               <input
-                id={`taxType-${index}`}
                 type="text"
                 value={residency.taxReferenceNumberType}
                 onChange={(e) => updateTaxResidency(index, 'taxReferenceNumberType', e.target.value)}
@@ -199,11 +197,10 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
             </div>
 
             <div>
-              <label htmlFor={`taxNumber-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Número de Identificação Fiscal (TIN) *
               </label>
               <input
-                id={`taxNumber-${index}`}
                 type="text"
                 value={residency.taxReferenceNumber}
                 onChange={(e) => updateTaxResidency(index, 'taxReferenceNumber', e.target.value)}
@@ -215,18 +212,17 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
 
             {!residency.taxReferenceNumber && (
               <div>
-                <label htmlFor={`noTinReason-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Motivo para não ter TIN *
                 </label>
                 <select
-                  id={`noTinReason-${index}`}
                   value={residency.reasonForNoTin || ''}
                   onChange={(e) => updateTaxResidency(index, 'reasonForNoTin', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required={!residency.taxReferenceNumber}
                 >
                   <option value="">Selecione um motivo</option>
-                  {reasonsForNoTin.map((reason: string) => (
+                  {reasonsForNoTin.map((reason) => (
                     <option key={reason} value={reason}>
                       {reason}
                     </option>
@@ -248,4 +244,3 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
 };
 
 export default FatcaCrsForm;
-
