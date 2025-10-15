@@ -4,7 +4,14 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  
+
+  // Configurações específicas para Cloudflare Pages
+  distDir: '.next',
+
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
+  },
+
   // Configuração para uploads
   experimental: {
     serverActions: {
