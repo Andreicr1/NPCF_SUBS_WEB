@@ -28,14 +28,14 @@ export default function HomePage() {
         <div className="mb-12">
           <div className="mx-auto flex items-end justify-center gap-3">
             <span className="font-display text-[56px] leading-none text-primary">Netz</span>
-            <span className="font-display text-[56px] leading-none text-secondary">asset</span>
+            <span className="font-display text-[56px] leading-none text-secondary">Asset</span>
           </div>
           <div className="mt-2 text-[16px] tracking-[4px] text-neutral-600">OFFSHORE</div>
         </div>
 
         {/* Heading */}
         <h1 className="mb-4 font-display text-5xl font-bold text-primary">Netz Private Credit Fund</h1>
-        <p className="mb-10 text-[20px] text-neutral-600">Portal de subscrição profissional e seguro</p>
+        <p className="mb-10 text-[20px] text-neutral-600">Portal de Subscrição</p>
 
         {/* CTA */}
         <Link href="/subscribe" className="btn-primary w-[200px] h-[56px]">
@@ -50,18 +50,18 @@ export default function HomePage() {
       <section className="relative z-10 mx-auto mb-20 grid max-w-6xl grid-cols-1 gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
         <FeatureCard
           icon={<ShieldCheck size={48} className="text-accent" />}
-          title="Segurança e Compliance"
-          description="Regulado pelas Ilhas Cayman com compliance internacional completo"
+          title="Governaça"
+          description="Regulado pela CIMA"
         />
         <FeatureCard
           icon={<BarChart3 size={48} className="text-accent" />}
           title="Investimento Profissional"
-          description="Acesso exclusivo para investidores qualificados e sofisticados"
+          description="Acesso exclusivo para investidores qualificados"
         />
         <FeatureCard
           icon={<Globe size={48} className="text-accent" />}
           title="Processo Digital"
-          description="Subscrição 100% online com validação em 5 passos"
+          description="Subscrição 100% online"
         />
       </section>
     </main>
