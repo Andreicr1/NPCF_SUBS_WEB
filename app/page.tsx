@@ -70,8 +70,8 @@ export default function HomePage() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="group rounded-xl border border-neutral-300 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-neutral-200/60">{icon}</div>
+    <div className="group rounded-xl border-2 border-neutral-300 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl text-center">
+      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-neutral-200/60 mx-auto">{icon}</div>
       <h3 className="mb-2 font-display text-xl font-semibold text-neutral-900">{title}</h3>
       <p className="text-neutral-600">{description}</p>
     </div>
