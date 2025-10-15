@@ -27,10 +27,6 @@
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": [
-    "node_modules",
-    "Pepamlform.tsx",
-    "Fatcacrsform.tsx",
-    "pdfGenerator.ts",
-    "route.ts"
+    "node_modules"
   ]
 }

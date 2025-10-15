@@ -218,18 +218,45 @@ npm test
 
 ## 📦 Deploy
 
-### Vercel (Recomendado)
+### Cloudflare Pages (Recomendado)
 
+1. **Conectar Repositório:**
+   - Acesse [Cloudflare Pages](https://pages.cloudflare.com/)
+   - Clique em "Create a project"
+   - Conecte seu repositório Git (GitHub/GitLab)
+
+2. **Configurar Build:**
+   ```
+   Build command: npm run build
+   Build output directory: .next
+   Root directory: (leave empty)
+   ```
+
+3. **Variáveis de Ambiente:**
+   Adicione as seguintes variáveis no painel do Cloudflare Pages:
+   ```
+   DATABASE_URL=file:./dev.db
+   NEXT_PUBLIC_APP_URL=https://seu-dominio.pages.dev
+   DROPBOX_SIGN_API_KEY=sua_api_key
+   DROPBOX_SIGN_CLIENT_ID=seu_client_id
+   DROPBOX_SIGN_TEST_MODE=true
+   APP_SECRET=seu_secret_key_min_32_chars
+   ADMIN_EMAIL=admin@netzprivatecredit.com
+   ```
+
+4. **Deploy Automático:**
+   - O deploy acontecerá automaticamente a cada push na branch main
+   - O banco SQLite será criado automaticamente no ambiente de produção
+
+### Outras Plataformas
+
+#### Vercel
 ```bash
-# Instalar Vercel CLI
 npm i -g vercel
-
-# Deploy
 vercel
 ```
 
-### AWS Amplify
-
+#### AWS Amplify
 1. Conecte o repositório no console do Amplify
 2. Configure as variáveis de ambiente
 3. Configure o banco de dados (RDS PostgreSQL)
