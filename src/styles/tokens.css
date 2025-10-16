@@ -1,0 +1,25 @@
+:root {
+  --brand-900: #112742;
+  --brand-700: #193B63;
+  --brand-600: #1F4A80;
+  --brand-500: #245A9F;
+  --brand-400: #3A75BA;
+
+  --ink-900: #0E1320;
+  --ink-700: #2A3140;
+  --ink-500: #495263;
+
+  --muted-400: #B6C0CF;
+  --muted-200: #E6EBF2;
+  --bg-50: #F6F9FC;
+  --white: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Keep institutional palette unchanged but ensure text contrast */
+    --bg-50: #0e1116;
+    --ink-900: #f5f7fa;
+  }
+}
+

@@ -10,6 +10,91 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User - Sistema de autenticação
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  email     String   @unique
+  name      String?
+  
+  // Relacionamento com Investor (1-to-1)
+  investorId String?  @unique
+  investor   Investor? @relation(fields: [investorId], references: [id], onDelete: Cascade)
+  
+  // Auth
+  lastLoginAt DateTime?
+  loginAttempts Int @default(0)
+  lockedUntil DateTime?
+  
+  // Relacionamentos
+  verificationCodes VerificationCode[]
+  sessions Session[]
+  auditLogs UserAuditLog[]
+  
+  @@map("users")
+}
+
+// VerificationCode - Códigos de verificação por e-mail
+model VerificationCode {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  code      String   // 6 dígitos
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+  
+  ipAddress String?
+  userAgent String?
+  
+  @@index([userId, code])
+  @@map("verification_codes")
+}
+
+// Session - Sessões ativas
+model Session {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  
+  lastActivityAt DateTime @default(now())
+  
+  @@index([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+// UserAuditLog - Log de auditoria específico de usuários
+model UserAuditLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  action    String   // "login_attempt" | "login_success" | "login_failed" | "logout" | "code_sent" | "code_verified"
+  details   String?  // JSON com detalhes
+  
+  ipAddress String?
+  userAgent String?
+  
+  @@index([userId])
+  @@index([action])
+  @@map("user_audit_logs")
+}
+
 // Investor - Dados do investidor
 model Investor {
   id        String   @id @default(uuid())
@@ -101,6 +186,11 @@ model Investor {
   incomingBankLocation String?
   signatoryCapacity String?
   
+  // Dropbox Sign Integration
+  signatureRequestId String? // ID da solicitação no Dropbox Sign
+  signatureStatus String? @default("not_sent") // "not_sent" | "pending" | "signed" | "declined" | "expired"
+  signatureUrl String? // URL para assinatura
+  
   // Status
   status          String  @default("draft") // "draft" | "submitted" | "under_review" | "approved" | "rejected"
   submittedAt     DateTime?
@@ -110,6 +200,7 @@ model Investor {
   // Relacionamentos
   documents       Document[]
   signatures      Signature[]
+  user            User?
   
   @@map("investors")
 }
@@ -144,8 +235,11 @@ model Signature {
   investorId  String
   investor    Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
   
+  // Tipo de documento
+  documentType       String  // "kyc" | "fatca" | "source_of_wealth" | "subscription"
+  
   // Dropbox Sign
-  signatureRequestId String  @unique
+  signatureRequestId String
   signatureId        String?
   
   // PDF

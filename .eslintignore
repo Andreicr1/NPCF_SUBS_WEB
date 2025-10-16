@@ -1,0 +1,12 @@
+# ESLint ignore patterns
+*.md
+*.json
+*.css
+*.scss
+
+# Specific patterns
+INTEGRATION_GUIDE.md
+RESTORATION_SUMMARY.md
+COMMANDS.md
+BUILD_SUCCESS.md
+FIXES_REPORT.md

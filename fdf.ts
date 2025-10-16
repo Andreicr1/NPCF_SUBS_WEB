@@ -1,6 +1,6 @@
-import { PDFDocument, PDFForm, PDFTextField, PDFCheckBox } from 'pdf-lib';
+import { PDFDocument, PDFTextField, PDFCheckBox } from 'pdf-lib';
 import fs from 'fs/promises';
-import path from 'path';
+// import path from 'path';
 import { fieldMapping } from './i18n';
 
 export interface FormData {
@@ -34,8 +34,9 @@ export class FDFService {
   async fillPDF(data: FormData, outputPath: string): Promise<string> {
     try {
       // Ler o template PDF
-      const templateBuffer = await fs.readFile(this.templatePath);
-      const pdfDoc = await PDFDocument.load(templateBuffer);
+  const templateBuffer = await fs.readFile(this.templatePath);
+  // Ensure type compatibility for pdf-lib: use Uint8Array/ArrayBuffer
+  const pdfDoc = await PDFDocument.load(new Uint8Array(templateBuffer));
       
       // Obter o formulário
       const form = pdfDoc.getForm();
@@ -91,8 +92,8 @@ export class FDFService {
    */
   async extractFields(): Promise<string[]> {
     try {
-      const templateBuffer = await fs.readFile(this.templatePath);
-      const pdfDoc = await PDFDocument.load(templateBuffer);
+  const templateBuffer = await fs.readFile(this.templatePath);
+  const pdfDoc = await PDFDocument.load(new Uint8Array(templateBuffer));
       const form = pdfDoc.getForm();
       const fields = form.getFields();
 

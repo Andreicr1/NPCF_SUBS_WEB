@@ -1,79 +1,91 @@
-import Link from 'next/link';
-import { ShieldCheck, BarChart3, Globe } from 'lucide-react';
+'use client';
 
-function CornerDecoration() {
+import { useRouter } from 'next/navigation';
+import { useAuth } from 'react-oidc-context';
+import { useEffect } from 'react';
+
+export default function LandingPage() {
+  const router = useRouter();
+  const auth = useAuth();
+
+  useEffect(() => {
+    // Se já autenticado, ir direto para dashboard
+    if (auth.isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [auth.isAuthenticated, router]);
+
+  const handleLogin = () => {
+    router.push('/login');
+  };
+
   return (
-    <>
-      <svg className="pointer-events-none absolute right-2 top-2 w-40 h-40 opacity-40 text-neutral-300" viewBox="0 0 100 100" fill="none">
-        <path d="M100 20 C60 20, 60 60, 20 60" stroke="currentColor" strokeWidth="1" fill="none" />
-        <path d="M100 10 C55 10, 55 55, 10 55" stroke="currentColor" strokeWidth="1" fill="none" />
-        <path d="M100 5 C52 5, 52 52, 5 52" stroke="currentColor" strokeWidth="1" fill="none" />
-      </svg>
-      <svg className="pointer-events-none absolute left-2 bottom-2 w-40 h-40 opacity-40 rotate-180 text-neutral-300" viewBox="0 0 100 100" fill="none">
-        <path d="M100 20 C60 20, 60 60, 20 60" stroke="currentColor" strokeWidth="1" fill="none" />
-        <path d="M100 10 C55 10, 55 55, 10 55" stroke="currentColor" strokeWidth="1" fill="none" />
-        <path d="M100 5 C52 5, 52 52, 5 52" stroke="currentColor" strokeWidth="1" fill="none" />
-      </svg>
-    </>
-  );
-}
-
-export default function HomePage() {
-  return (
-    <main className="relative overflow-hidden bg-hero-grad">
-      <CornerDecoration />
-
-      <section className="relative z-10 mx-auto flex min-h-[75vh] max-w-5xl flex-col items-center px-6 py-20 text-center animate-fadeUp">
-        {/* Logo + OFFSHORE */}
-        <div className="mb-12">
-          <div className="mx-auto flex items-end justify-center gap-3">
-            <span className="font-display text-[56px] leading-none text-primary">Netz</span>
-            <span className="font-display text-[56px] leading-none text-secondary">Asset</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+      {/* Hero Section */}
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Logo/Title */}
+          <div className="mb-8">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight">
+              Netz Private Credit Fund
+            </h1>
+            <div className="h-1 w-32 bg-blue-500 mx-auto mb-6"></div>
+            <p className="text-xl md:text-2xl text-blue-200 font-light">
+              Portal do Investidor
+            </p>
           </div>
-          <div className="mt-2 text-[16px] tracking-[4px] text-neutral-600">OFFSHORE</div>
+
+          {/* Description */}
+          <div className="mb-12 space-y-4">
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              Bem-vindo ao portal exclusivo para investidores do Netz Private Credit Fund.
+            </p>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Acesse sua conta para gerenciar subscrições, visualizar documentos e acompanhar seus investimentos.
+            </p>
+          </div>
+
+          {/* CTA Button */}
+          <button
+            onClick={handleLogin}
+            className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 rounded-lg overflow-hidden shadow-2xl transition-all duration-300 hover:bg-blue-700 hover:shadow-blue-500/50 hover:scale-105"
+          >
+            <span className="relative z-10 flex items-center space-x-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              <span>Acessar Portal</span>
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+          </button>
+
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all">
+              <div className="text-4xl mb-4">🔒</div>
+              <h3 className="text-xl font-semibold text-white mb-2">Seguro</h3>
+              <p className="text-gray-300 text-sm">Autenticação AWS Cognito com criptografia enterprise-grade</p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all">
+              <div className="text-4xl mb-4">📄</div>
+              <h3 className="text-xl font-semibold text-white mb-2">Digital</h3>
+              <p className="text-gray-300 text-sm">Assinatura eletrônica via Dropbox Sign integrada</p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-semibold text-white mb-2">Rápido</h3>
+              <p className="text-gray-300 text-sm">Processo de subscrição 100% online em minutos</p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-16 text-gray-500 text-sm">
+            <p>© 2024 Netz Private Credit Fund. Todos os direitos reservados.</p>
+          </div>
         </div>
-
-        {/* Heading */}
-        <h1 className="mb-4 font-display text-5xl font-bold text-primary">Netz Private Credit Fund</h1>
-        <p className="mb-10 text-[20px] text-neutral-600">Portal de Subscrição</p>
-
-        {/* CTA */}
-        <Link href="/subscribe" className="btn-primary w-[200px] h-[56px]">
-          Iniciar Subscrição
-        </Link>
-
-        {/* Divider */}
-        <div className="my-16 h-[2px] w-20 bg-accent mx-auto rounded" />
-      </section>
-
-      {/* Features */}
-      <section className="relative z-10 mx-auto mb-20 grid max-w-6xl grid-cols-1 gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
-        <FeatureCard
-          icon={<ShieldCheck size={48} className="text-accent" />}
-          title="Governaça"
-          description="Regulado pela CIMA"
-        />
-        <FeatureCard
-          icon={<BarChart3 size={48} className="text-accent" />}
-          title="Investimento Profissional"
-          description="Acesso exclusivo para investidores qualificados"
-        />
-        <FeatureCard
-          icon={<Globe size={48} className="text-accent" />}
-          title="Processo Digital"
-          description="Subscrição 100% online"
-        />
-      </section>
-    </main>
-  );
-}
-
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="group rounded-xl border-2 border-neutral-300 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl text-center">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-neutral-200/60 mx-auto">{icon}</div>
-      <h3 className="mb-2 font-display text-xl font-semibold text-neutral-900">{title}</h3>
-      <p className="text-neutral-600">{description}</p>
+      </div>
     </div>
   );
 }

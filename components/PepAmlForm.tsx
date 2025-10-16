@@ -40,7 +40,7 @@ const PepAmlForm: React.FC<PepAmlFormProps> = ({
   };
 
   return (
-    <div className="space-y-8">
+    <div className="card p-8 space-y-8">
       <div className="bg-amber-50 border-l-4 border-amber-400 p-4">
         <h3 className="text-sm font-medium text-amber-800">PEP e AML</h3>
         <p className="mt-1 text-sm text-amber-700">

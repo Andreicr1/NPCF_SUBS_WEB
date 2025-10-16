@@ -280,15 +280,17 @@ export const validateRequiredFields = (
     missingFields.push('taxResidencies');
   }
 
-  return {
-    isValid: missingFields.length === 0,
-    missingFields,
+    return {
+      isValid: missingFields.length === 0,
+      missingFields,
+    };
   };
-};
 
-export default {
-  universalFieldMappings,
-  extractUniversalData,
-  generatePdfData,
-  validateRequiredFields,
-};
+  const fieldMappingUtils = {
+    universalFieldMappings,
+    extractUniversalData,
+    generatePdfData,
+    validateRequiredFields,
+  };
+
+  export default fieldMappingUtils;

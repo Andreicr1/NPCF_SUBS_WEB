@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { SubscriptionAgreementData, ShareClass, shareClassLabels } from '../lib/types';
+import DateInput from './DateInput';
 
 type InvestorData = Record<string, any>;
 
@@ -24,10 +25,11 @@ export const SubscriptionAgreementForm: React.FC<SubscriptionAgreementFormProps>
       const words = numberToWords(data.subscriptionAmount);
       onChange({ ...data, subscriptionAmountWords: words });
     }
-  }, [data.subscriptionAmount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, onChange]);
 
   return (
-    <div className="space-y-8">
+    <div className="card p-8 space-y-8">
       {/* Info Box */}
       <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
         <div className="flex">
@@ -154,21 +156,22 @@ export const SubscriptionAgreementForm: React.FC<SubscriptionAgreementFormProps>
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Informações da Entidade</h3>
 
-          <div>
-            <label htmlFor="incorporationDate" className="block text-sm font-medium text-gray-700 mb-1">
-              Data de Incorporação *
-            </label>
-            <input
-              type="date"
-              id="incorporationDate"
-              value={data.incorporationDate?.toISOString().split('T')[0] || ''}
-              onChange={(e) =>
-                onChange({ ...data, incorporationDate: new Date(e.target.value) })
+          <DateInput
+            id="incorporationDate"
+            name="incorporationDate"
+            label="Data de Incorporação"
+            required
+            value={data.incorporationDate ? new Date(data.incorporationDate).toLocaleDateString('pt-BR') : ''}
+            onChange={(e) => {
+              const dateStr = e.target.value;
+              // Converte dd/MM/yyyy para Date object
+              if (dateStr.length === 10) {
+                const [day, month, year] = dateStr.split('/');
+                const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                onChange({ ...data, incorporationDate: date });
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+            }}
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <div>

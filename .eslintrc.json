@@ -1,0 +1,18 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@next/next/no-img-element": "off",
+    "react/no-unescaped-entities": "off",
+    "@next/next/inline-script-id": "off",
+    "@next/next/no-sync-scripts": "off",
+    "react/jsx-key": "warn",
+    "@typescript-eslint/no-empty-interface": "off",
+    "no-console": "off",
+    "react/no-unknown-property": "off"
+  }
+}

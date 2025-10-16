@@ -1,0 +1,23 @@
+:root {
+  /* Brand palette */
+  --brand-900: #0b2a4a;
+  --brand-700: #0f3c6e;
+  --brand-600: #154a84;
+  --brand-500: #1e5ea6;
+  --brand-400: #2e7dbe;
+
+  /* Text (ink) */
+  --ink-900: #0f172a; /* slate-900 */
+  --ink-700: #334155; /* slate-700 */
+  --ink-500: #64748b; /* slate-500 */
+
+  /* Muted */
+  --muted-400: #cbd5e1; /* slate-300 */
+  --muted-200: #e2e8f0; /* slate-200 */
+
+  /* Background */
+  --bg-50: #f8fafc; /* slate-50 */
+
+  /* Base */
+  --white: #ffffff;
+}

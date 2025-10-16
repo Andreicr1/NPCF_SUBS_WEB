@@ -57,7 +57,7 @@ export const FatcaCrsForm: React.FC<FatcaCrsFormProps> = ({ data, onChange }) =>
   };
 
   return (
-    <div className="space-y-6">
+    <div className="card p-8 space-y-6">
       <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
         <div className="flex">
           <div className="flex-shrink-0">

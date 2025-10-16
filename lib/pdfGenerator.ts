@@ -1,6 +1,6 @@
 import { CompleteKycData } from './types';
 import { generatePdfData } from './fieldMapping';
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 
 type InvestorData = Record<string, any>;
 
@@ -54,7 +54,7 @@ export const generateKycPdf = async (
       const field = form.getTextField(fieldName);
       field.setText(String(value));
     } catch (error) {
-      console.warn(`Field ${fieldName} not found in PDF`);
+      console.warn(`Field ${fieldName} not found in PDF`, error);
     }
   });
 
@@ -64,7 +64,7 @@ export const generateKycPdf = async (
     const dateField = form.getTextField('Date');
     dateField.setText(today);
   } catch (error) {
-    console.warn('Date field not found');
+    console.warn('Date field not found', error);
   }
 
   return await pdfDoc.save();
@@ -91,7 +91,7 @@ export const generateFatcaPdf = async (
       const field = form.getTextField(fieldName);
       field.setText(String(value));
     } catch (error) {
-      console.warn(`Field ${fieldName} not found in PDF`);
+      console.warn(`Field ${fieldName} not found in PDF`, error);
     }
   });
 
@@ -101,14 +101,14 @@ export const generateFatcaPdf = async (
       const checkbox = form.getCheckBox('isUsCitizen_a');
       checkbox.check();
     } catch (error) {
-      console.warn('US Citizen checkbox not found');
+      console.warn('US Citizen checkbox not found', error);
     }
   } else {
     try {
       const checkbox = form.getCheckBox('isUsCitizen_c');
       checkbox.check();
     } catch (error) {
-      console.warn('Non-US Citizen checkbox not found');
+      console.warn('Non-US Citizen checkbox not found', error);
     }
   }
 
@@ -125,7 +125,7 @@ export const generateFatcaPdf = async (
         form.getTextField(`${prefix}_reason`).setText(residency.reasonForNoTin);
       }
     } catch (error) {
-      console.warn(`Tax residency field ${prefix} not found`);
+      console.warn(`Tax residency field ${prefix} not found`, error);
     }
   });
 
@@ -153,7 +153,7 @@ export const generateSourceOfWealthPdf = async (
       const field = form.getTextField(fieldName);
       field.setText(String(value));
     } catch (error) {
-      console.warn(`Field ${fieldName} not found in PDF`);
+      console.warn(`Field ${fieldName} not found in PDF`, error);
     }
   });
 
@@ -163,7 +163,7 @@ export const generateSourceOfWealthPdf = async (
       const checkbox = form.getCheckBox(`wealth_${category}`);
       checkbox.check();
     } catch (error) {
-      console.warn(`Wealth category checkbox ${category} not found`);
+      console.warn(`Wealth category checkbox ${category} not found`, error);
     }
   });
 
@@ -172,7 +172,7 @@ export const generateSourceOfWealthPdf = async (
     try {
       form.getCheckBox('declaration_personal_property').check();
     } catch (error) {
-      console.warn('Personal property declaration checkbox not found');
+      console.warn('Personal property declaration checkbox not found', error);
     }
   }
 
@@ -180,7 +180,7 @@ export const generateSourceOfWealthPdf = async (
     try {
       form.getCheckBox('declaration_no_criminal').check();
     } catch (error) {
-      console.warn('No criminal activity declaration checkbox not found');
+      console.warn('No criminal activity declaration checkbox not found', error);
     }
   }
 
@@ -207,7 +207,7 @@ export const generateSubscriptionPdf = async (
     form.getTextField('Investor_Email').setText(investor.email);
     form.getTextField('Investor_Phone').setText(investor.phone || '');
   } catch (error) {
-    console.warn('Basic investor fields not found');
+    console.warn('Basic investor fields not found', error);
   }
 
   // Subscription Details
@@ -220,7 +220,7 @@ export const generateSubscriptionPdf = async (
       kycData.subscription.subscriptionAmountWords || ''
     );
   } catch (error) {
-    console.warn('Subscription detail fields not found');
+    console.warn('Subscription detail fields not found', error);
   }
 
   // Entity Information (if applicable)
@@ -232,7 +232,7 @@ export const generateSubscriptionPdf = async (
       form.getTextField('Incorporation_Place').setText(kycData.subscription.incorporationPlace || '');
       form.getTextField('Country_Of_Formation').setText(kycData.subscription.countryOfFormation || '');
     } catch (error) {
-      console.warn('Entity information fields not found');
+      console.warn('Entity information fields not found', error);
     }
   }
 
@@ -240,7 +240,7 @@ export const generateSubscriptionPdf = async (
   try {
     form.getTextField('Incoming_Bank_Location').setText(kycData.subscription.incomingBankLocation);
   } catch (error) {
-    console.warn('Bank location field not found');
+    console.warn('Bank location field not found', error);
   }
 
   // Confirmations
@@ -252,7 +252,7 @@ export const generateSubscriptionPdf = async (
       form.getCheckBox('Non_US_Person_Confirmation').check();
     }
   } catch (error) {
-    console.warn('Confirmation checkboxes not found');
+    console.warn('Confirmation checkboxes not found', error);
   }
 
   // Mailing Address
@@ -260,7 +260,7 @@ export const generateSubscriptionPdf = async (
     try {
       form.getTextField('Mailing_Address').setText(kycData.subscription.mailingAddress);
     } catch (error) {
-      console.warn('Mailing address field not found');
+      console.warn('Mailing address field not found', error);
     }
   }
 
@@ -269,7 +269,7 @@ export const generateSubscriptionPdf = async (
     try {
       form.getTextField('Signatory_Capacity').setText(kycData.subscription.signatoryCapacity);
     } catch (error) {
-      console.warn('Signatory capacity field not found');
+      console.warn('Signatory capacity field not found', error);
     }
   }
 
@@ -302,7 +302,7 @@ export async function downloadAllPdfs(investor: Record<string, any>, kycData: an
   if (pdfs.sourceOfWealthPdf) downloadPdf(pdfs.sourceOfWealthPdf, `${(investor.fullName ?? 'investor')}_Source_of_Wealth.pdf`);
 }
 
-export default {
+const pdfGenerator = {
   generateAllPdfs,
   generateKycPdf,
   generateFatcaPdf,
@@ -310,3 +310,5 @@ export default {
   downloadPdf,
   downloadAllPdfs,
 };
+
+export default pdfGenerator;

@@ -1,0 +1,29 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base resets */
+* { -webkit-tap-highlight-color: transparent; }
+html, body, #root { height: 100%; }
+body { @apply font-sans text-ink-700 bg-bg-50; }
+
+/* Utilities */
+.container-max { @apply max-w-container mx-auto px-4 sm:px-6 lg:px-8; }
+
+.card { @apply bg-white rounded-2xl shadow-card; }
+
+.focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white; }
+
+/* Buttons base */
+.btn { @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors; }
+.btn-primary { @apply bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-700 focus-visible:ring-brand-400; }
+.btn-secondary { @apply bg-white border border-muted-200 text-brand-700 hover:bg-muted-200; }
+.btn-tertiary { @apply text-ink-700 hover:text-ink-900; }
+
+/* Stepper bullets */
+.step-bullet { @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold; }
+.step-bullet-active { @apply bg-brand-600 text-white; }
+.step-bullet-done { @apply bg-brand-400 text-white; }
+.step-bullet-future { @apply bg-muted-200 text-ink-500; }

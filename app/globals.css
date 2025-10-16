@@ -1,16 +1,17 @@
+/* Tokens must be imported before any other rules to avoid @import warnings */
+@import './styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;600;700&display=swap');
-
 html, body { height: 100%; }
-body { background-color: #F5F7FA; font-family: 'Inter', system-ui, sans-serif; color: #1A202C; }
+/* Font family is applied via next/font in layout.tsx; keep only colors here */
+body { background-color: #F5F7FA; color: #1A202C; }
 
 /* Reutilizáveis */
 .card { background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); padding: 48px; transition: all .3s ease; }
-.btn-primary { background: linear-gradient(135deg, #003366 0%, #1E4D7B 100%); color: #fff; padding: 12px 40px; border-radius: 8px; font-family:'Montserrat',sans-serif; font-weight:600; box-shadow: 0 2px 8px rgba(0,51,102,.2); transition: all .3s ease; display:inline-flex; align-items:center; justify-content:center; }
+.btn-primary { background: linear-gradient(135deg, #003366 0%, #1E4D7B 100%); color: #fff; padding: 12px 40px; border-radius: 8px; font-weight:600; box-shadow: 0 2px 8px rgba(0,51,102,.2); transition: all .3s ease; display:inline-flex; align-items:center; justify-content:center; }
 .btn-primary:hover { box-shadow: 0 6px 16px rgba(0,51,102,.35); transform: scale(1.02); }
 .btn-secondary { background: transparent; border: 1.5px solid #E1E8ED; color: #4A5568; padding: 12px 32px; border-radius: 8px; transition: all .2s ease; }
 .btn-secondary:hover { background:#F5F7FA; }
@@ -20,3 +21,10 @@ body { background-color: #F5F7FA; font-family: 'Inter', system-ui, sans-serif; c
 
 /* Hero gradient background helper */
 .bg-hero-grad { background: linear-gradient(180deg, #F5F7FA 0%, #FFFFFF 60%); }
+
+.container-max { @apply max-w-[1040px] mx-auto px-4 sm:px-6 lg:px-8; }
+.focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white; }
+.step-bullet { @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold; }
+.step-bullet-active { @apply bg-brand-600 text-white; }
+.step-bullet-done { @apply bg-brand-400 text-white; }
+.step-bullet-future { @apply bg-muted-200 text-ink-500; }
